@@ -1,0 +1,683 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="添财思维">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1.前言：最近看Stable Diffusion开源了，据说比Disco Diffusion更快，于是从git上拉取了项目尝试本地部署了，记录分享一下过程~这里是官网介绍：https:&#x2F;&#x2F;stability.ai&#x2F;blog&#x2F;stable-diffusion-public-release 2.必要前提： 科学上网。很多链接都需要用到。 显卡的显存需要足够大，至于多大没看到哪有说，反正6g绝对不行">
+<meta property="og:type" content="article">
+<meta property="og:title" content="stable diffusion在线部署">
+<meta property="og:url" content="http://example.com/2023/07/23/stable%20diffusion%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:site_name" content="添财思维">
+<meta property="og:description" content="1.前言：最近看Stable Diffusion开源了，据说比Disco Diffusion更快，于是从git上拉取了项目尝试本地部署了，记录分享一下过程~这里是官网介绍：https:&#x2F;&#x2F;stability.ai&#x2F;blog&#x2F;stable-diffusion-public-release 2.必要前提： 科学上网。很多链接都需要用到。 显卡的显存需要足够大，至于多大没看到哪有说，反正6g绝对不行">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889221-7822b851-7d47-4fee-9082-34cb2d195c41.webp#averageHue=%23fdfcfc&clientId=ue216eeb4-8a2a-4&from=paste&id=u84be11dd&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u020c9835-22de-4c4c-a7bc-c85352acea8&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889235-db47319f-9497-4bac-ab04-d3038e6cf83c.webp#averageHue=%23f8f8f8&clientId=ue216eeb4-8a2a-4&from=paste&id=ub5985c0f&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ud0f57de8-0505-4e0c-bfec-659d6a95f1a&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890902-8a9e69ee-a4aa-48f3-aeee-daf6583c458f.webp#averageHue=%23444342&clientId=ue216eeb4-8a2a-4&from=paste&id=u864a6b12&originHeight=506&originWidth=633&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ude8cc227-2c5e-4e19-80b0-f64198f8cc1&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889191-2d3fd8b2-b169-4ede-b556-5883cd608176.webp#averageHue=%230d0d0d&clientId=ue216eeb4-8a2a-4&from=paste&id=udb01c4f9&originHeight=480&originWidth=960&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u1f89d5a3-75e8-4f8e-948a-b9b0401d639&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889192-4ff3847c-359d-427b-8023-19909268f6eb.webp#averageHue=%230d0d0d&clientId=ue216eeb4-8a2a-4&from=paste&id=u300c074f&originHeight=480&originWidth=960&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u9cf3a9bd-8d82-4633-a19c-6ef6c0979fe&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889831-3e4d86a4-63dc-4fde-8e4f-4ab3da8488ff.webp#averageHue=%23f1f0ea&clientId=ue216eeb4-8a2a-4&from=paste&id=u03649e48&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u19765c84-18bf-489b-8a77-c92c003b8de&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889791-9e25e947-4f54-47a2-8078-e0b857ce0664.webp#averageHue=%23000000&clientId=ue216eeb4-8a2a-4&from=paste&id=u5c2ea4f8&originHeight=338&originWidth=562&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ufe9db022-8b13-4a06-b0b6-70dd3b215e0&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890170-037d14ab-a33a-40c7-bc8d-80e9d4534dfb.webp#averageHue=%23c5c4c4&clientId=ue216eeb4-8a2a-4&from=paste&id=u35b39880&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ue48fbbd2-0690-4099-8249-09d52b800d1&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890399-9d1f075d-9100-4c15-bbed-575a4ea96ed0.webp#averageHue=%230d0d0d&clientId=ue216eeb4-8a2a-4&from=paste&id=u7ea65f08&originHeight=1017&originWidth=1903&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ue4d7000c-a0c9-4cbd-9104-f658f598ac9&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890811-8d82c931-e498-4df1-a8b2-ba7f053970e3.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=u37fc89f5&originHeight=544&originWidth=963&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u47d02861-ba67-442a-95ce-ae3efafd693&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891253-e82f693d-1da2-4170-a1ae-2279b5994c4b.webp#averageHue=%23f4f3f3&clientId=ue216eeb4-8a2a-4&from=paste&id=u37183442&originHeight=798&originWidth=1765&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=uf2989a13-8f72-44f2-9d91-a7363be10b2&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891591-c89c0092-c8ad-49fd-8967-3a0b64d8f963.webp#averageHue=%230c0c0c&clientId=ue216eeb4-8a2a-4&from=paste&id=ub78fe9cb&originHeight=1017&originWidth=1903&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u886e69b8-b8fc-49a3-8ee0-a614777876f&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891960-0faabc36-8973-4506-812d-eb5c58dce5e4.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=ua611e2a4&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ucbbb0d9b-a560-4eb3-904b-961d517e5b3&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891800-2f69fcb7-baaa-42b2-a1d5-320a365adf72.webp#averageHue=%23fefefe&clientId=ue216eeb4-8a2a-4&from=paste&id=u7643fcc5&originHeight=960&originWidth=1767&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u78626d1f-51de-4c9c-9b40-b4ff913a166&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909892214-e07bdc69-2af5-40ee-8cee-cef8754fb1a0.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=u4e7ec006&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ua24d081b-30fb-4cba-b034-829eafdeacf&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909892404-30025fe1-0334-4e52-89e2-927c62c1a8d3.webp#averageHue=%23292929&clientId=ue216eeb4-8a2a-4&from=paste&id=u8cf06388&originHeight=478&originWidth=1903&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u7d3a87f3-7ae4-4b65-9cfe-7720b7978e6&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909892702-007575dd-39e9-4df3-8fa8-82c7c4455fab.webp#averageHue=%23fdfcfc&clientId=ue216eeb4-8a2a-4&from=paste&id=u39a64ffa&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u2fd504af-945e-486a-91c4-419aec37c01&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909893105-e08788fe-11b6-400c-bf10-921d8c585d79.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=ucfc16e4f&originHeight=392&originWidth=1894&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u8b863ff3-04ad-4654-baa6-36430fdda41&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909893304-23387565-036f-4767-916b-8c932a4758c4.webp#averageHue=%238d8b8b&clientId=ue216eeb4-8a2a-4&from=paste&id=u087204c5&originHeight=216&originWidth=926&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u108dc799-9bf4-44c9-a6cc-5103d8d06f5&title=">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909893312-3579df65-64d2-44d6-9c07-f21591e6f5ce.webp#averageHue=%23f7f6f3&clientId=ue216eeb4-8a2a-4&from=paste&id=ud06bd0eb&originHeight=136&originWidth=823&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=uc77d3c49-547b-485c-ad4e-6a716ee05b9&title=">
+<meta property="article:published_time" content="2023-07-23T15:55:04.527Z">
+<meta property="article:modified_time" content="2023-07-23T15:56:06.499Z">
+<meta property="article:author" content="添财思维">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889221-7822b851-7d47-4fee-9082-34cb2d195c41.webp#averageHue=%23fdfcfc&clientId=ue216eeb4-8a2a-4&from=paste&id=u84be11dd&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u020c9835-22de-4c4c-a7bc-c85352acea8&title=">
+  
+  
+  
+  <title>stable diffusion在线部署 - 添财思维</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="stable diffusion在线部署"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-23 23:55" pubdate>
+          2023年7月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          43 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">stable diffusion在线部署</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="1-前言："><a href="#1-前言：" class="headerlink" title="1.前言："></a>1.前言：</h2><p>最近看Stable Diffusion开源了，据说比Disco Diffusion更快，于是从git上拉取了项目尝试本地部署了，记录分享一下过程~<br>这里是官网介绍：<a target="_blank" rel="noopener" href="https://stability.ai/blog/stable-diffusion-public-release">https://stability.ai/blog/stable-diffusion-public-release</a></p>
+<h2 id="2-必要前提："><a href="#2-必要前提：" class="headerlink" title="2.必要前提："></a>2.必要前提：</h2><ol>
+<li>科学上网。很多链接都需要用到。</li>
+<li>显卡的显存需要足够大，至于多大没看到哪有说，反正6g绝对不行</li>
+</ol>
+<h2 id="3-部署前准备："><a href="#3-部署前准备：" class="headerlink" title="3.部署前准备："></a>3.部署前准备：</h2><p>本地化部署运行虽然很好，但是也有一些基本要求<br>（1）需要拥有NVIDIA显卡，GT1060起，显存4G以上。（已经不需要3080起，亲民不少）<br>（2）操作系统需要win10或者win11的系统。<br>MacOS平台本地化请见《如何在mac电脑上运行stable diffusion来做AI绘画》<br>（3）电脑内存16G或者以上。<br>（4）最好会魔法上网，否则网络波动，有些网页打不开，有时下载很慢。<br>（5）耐心，多尝试，多搜索。这个教程我已经重复过2次，因此很多问题基本上都踩坑并写出来了。所以请放心，能跑通的。<br>我的电脑配置供大家参考，Win10，I7，NVIDIA GT1050 4G，16G<br>生成一张20step的图大概20-30s（若使用更高性能的电脑，生成速度更快。）</p>
+<h2 id="4-使用的项目Stable-diffusion-WebUI项目"><a href="#4-使用的项目Stable-diffusion-WebUI项目" class="headerlink" title="4.使用的项目Stable diffusion WebUI项目"></a>4.使用的项目Stable diffusion WebUI项目</h2><p>Stable diffusion大家都知道了，是当前最多人使用且效果最好的开源AI绘图软件之一，属于当红炸子鸡了。<br>不过，stable diffusion项目本地化的部署，是纯代码界面，使用起来对于非程序员没那么友好。<br>而stable diffusion webui，是基于stable diffusion 项目的可视化操作项目。<br>通过可视化的网页操作，更方便调试prompt，及各种参数。<br>同时也附加了很多功能，比如img2img功能，extra放大图片功能等等。<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889221-7822b851-7d47-4fee-9082-34cb2d195c41.webp#averageHue=%23fdfcfc&clientId=ue216eeb4-8a2a-4&from=paste&id=u84be11dd&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u020c9835-22de-4c4c-a7bc-c85352acea8&title=" srcset="/img/loading.gif" lazyload><br>因此stable diffusion webui项目是很多人部署到本地的首选。<br>我们本教程就是以stable diffusion webui项目为例来操作的。</p>
+<h1 id="二、电脑环境配置"><a href="#二、电脑环境配置" class="headerlink" title="二、电脑环境配置"></a>二、电脑环境配置</h1><h2 id="1-安装miniconda"><a href="#1-安装miniconda" class="headerlink" title="1.安装miniconda"></a>1.安装miniconda</h2><p>这个是用来管理python版本的，他可以实现python的多版本切换。<br>下载地址：<a target="_blank" rel="noopener" href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a><br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889235-db47319f-9497-4bac-ab04-d3038e6cf83c.webp#averageHue=%23f8f8f8&clientId=ue216eeb4-8a2a-4&from=paste&id=ub5985c0f&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ud0f57de8-0505-4e0c-bfec-659d6a95f1a&title=" srcset="/img/loading.gif" lazyload><br>安装时按默认的一路next就行。</p>
+<h2 id="2-用管理员权限打开miniconda，输入conda-V-弹出版本号即为正确安装"><a href="#2-用管理员权限打开miniconda，输入conda-V-弹出版本号即为正确安装" class="headerlink" title="2.用管理员权限打开miniconda，输入conda -V 弹出版本号即为正确安装"></a>2.用管理员权限打开miniconda，输入conda -V 弹出版本号即为正确安装</h2><p><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890902-8a9e69ee-a4aa-48f3-aeee-daf6583c458f.webp#averageHue=%23444342&clientId=ue216eeb4-8a2a-4&from=paste&id=u864a6b12&originHeight=506&originWidth=633&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ude8cc227-2c5e-4e19-80b0-f64198f8cc1&title=" srcset="/img/loading.gif" lazyload><br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889191-2d3fd8b2-b169-4ede-b556-5883cd608176.webp#averageHue=%230d0d0d&clientId=ue216eeb4-8a2a-4&from=paste&id=udb01c4f9&originHeight=480&originWidth=960&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u1f89d5a3-75e8-4f8e-948a-b9b0401d639&title=" srcset="/img/loading.gif" lazyload></p>
+<h2 id="3-配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）"><a href="#3-配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）" class="headerlink" title="3.配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）"></a>3.配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）</h2><p>执行下面</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">conda config --<span class="hljs-built_in">set</span> show_channel_urls <span class="hljs-built_in">yes</span><br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>生成.condarc 文件<br>在我的电脑&#x2F;此电脑-C盘-users-你的账号名下用记事本打开并修改.condarc文件。（如我的路径是C:\Users\Administrator。）<br>把下面的内容全部复制进去，全部覆盖原内容，ctrl+s保存，关闭文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs bash">channels:<br> - defaults<br>show_channel_urls: <span class="hljs-literal">true</span><br>default_channels:<br> - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main<br> - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r<br> - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2<br>custom_channels:<br> conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud<br> msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud<br> bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud<br> menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud<br> pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud<br> pytorch-lts: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud<br> simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>运行conda clean -i 清除索引缓存，以确保使用的是镜像站的地址。<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889192-4ff3847c-359d-427b-8023-19909268f6eb.webp#averageHue=%230d0d0d&clientId=ue216eeb4-8a2a-4&from=paste&id=u300c074f&originHeight=480&originWidth=960&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u9cf3a9bd-8d82-4633-a19c-6ef6c0979fe&title=" srcset="/img/loading.gif" lazyload></p>
+<h2 id="4-创建python-3-10-6版本的环境"><a href="#4-创建python-3-10-6版本的环境" class="headerlink" title="4.创建python 3.10.6版本的环境"></a>4.创建python 3.10.6版本的环境</h2><p>运行下面语句，创建环境</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">conda create --name lmd python=3.10.6<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>系统可能会提示y&#x2F;n, 输入y，按回车即可。<br>显示done，那就完成了。<br>在你的C:\ProgramData\Miniconda3\envs\lmd已经创建了一个新的项目。</p>
+<h2 id="5-激活环境"><a href="#5-激活环境" class="headerlink" title="5.激活环境"></a>5.激活环境</h2><p>输入conda activate lmd 回车。</p>
+<h2 id="6-升级pip，并设置pip的默认库包下载地址为清华镜像。"><a href="#6-升级pip，并设置pip的默认库包下载地址为清华镜像。" class="headerlink" title="6.升级pip，并设置pip的默认库包下载地址为清华镜像。"></a>6.升级pip，并设置pip的默认库包下载地址为清华镜像。</h2><p>每一行输入后回车，等执行完再输入下一行，再回车。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">python -m pip install --upgrade pip<br>pip config <span class="hljs-built_in">set</span> global.index-url https://pypi.tuna.tsinghua.edu.cn/simple<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>不报错就是完成了。</p>
+<h2 id="7-安装git，用来克隆下载github的项目，比如本作中的stable-diffusion-webui"><a href="#7-安装git，用来克隆下载github的项目，比如本作中的stable-diffusion-webui" class="headerlink" title="7.安装git，用来克隆下载github的项目，比如本作中的stable diffusion webui"></a>7.安装git，用来克隆下载github的项目，比如本作中的stable diffusion webui</h2><p>前往git官网<a target="_blank" rel="noopener" href="https://git-scm.com/download/win">https://git-scm.com/download/win</a><br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889831-3e4d86a4-63dc-4fde-8e4f-4ab3da8488ff.webp#averageHue=%23f1f0ea&clientId=ue216eeb4-8a2a-4&from=paste&id=u03649e48&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u19765c84-18bf-489b-8a77-c92c003b8de&title=" srcset="/img/loading.gif" lazyload><br>下载好后，一路默认安装，next即可。<br>开始菜单找到git cmd。<br>打开并输入下面指令。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git --version<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>查看git的版本，显示了版本号即安装成功。<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909889791-9e25e947-4f54-47a2-8078-e0b857ce0664.webp#averageHue=%23000000&clientId=ue216eeb4-8a2a-4&from=paste&id=u5c2ea4f8&originHeight=338&originWidth=562&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ufe9db022-8b13-4a06-b0b6-70dd3b215e0&title=" srcset="/img/loading.gif" lazyload></p>
+<h2 id="8-安装cuda"><a href="#8-安装cuda" class="headerlink" title="8.安装cuda"></a>8.安装cuda</h2><p>cuda是NVIDIA显卡用来跑算法的依赖程序，所以我们需要它。<br>打开NVIDIA cuda官网，<a target="_blank" rel="noopener" href="https://developer.nvidia.com/cuda-toolkit-archive">https://developer.nvidia.com/cuda-toolkit-archive</a><br>（这里有人可能会打不开网页，如果打不开，请用魔法上网。）<br>你会发现有很多版本，下载哪个版本呢？<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890170-037d14ab-a33a-40c7-bc8d-80e9d4534dfb.webp#averageHue=%23c5c4c4&clientId=ue216eeb4-8a2a-4&from=paste&id=u35b39880&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ue48fbbd2-0690-4099-8249-09d52b800d1&title=" srcset="/img/loading.gif" lazyload><br>回到一开始的miniconda的小窗，输入nvidia-smi，查看你的cuda版本<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890399-9d1f075d-9100-4c15-bbed-575a4ea96ed0.webp#averageHue=%230d0d0d&clientId=ue216eeb4-8a2a-4&from=paste&id=u7ea65f08&originHeight=1017&originWidth=1903&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ue4d7000c-a0c9-4cbd-9104-f658f598ac9&title=" srcset="/img/loading.gif" lazyload><br>比如我的是12.1的版本，我就下载12.1.0的链接<br>下载完后安装，这个软件2个G，可以安装在c盘以外的地方。比如D盘。<br>好了，完成这步，电脑的基础环境设置终于完事了。<br>下面开始正式折腾stable diffusion了。<br><em><strong>注意：如果提示此命令nvidia-smi，非内部命令时，按以下操作</strong></em><br>把此路径：C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR，放入到环境变量中<br>显卡所在路径：<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909890811-8d82c931-e498-4df1-a8b2-ba7f053970e3.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=u37fc89f5&originHeight=544&originWidth=963&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u47d02861-ba67-442a-95ce-ae3efafd693&title=" srcset="/img/loading.gif" lazyload><br>环境变量位置：<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891253-e82f693d-1da2-4170-a1ae-2279b5994c4b.webp#averageHue=%23f4f3f3&clientId=ue216eeb4-8a2a-4&from=paste&id=u37183442&originHeight=798&originWidth=1765&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=uf2989a13-8f72-44f2-9d91-a7363be10b2&title=" srcset="/img/loading.gif" lazyload></p>
+<h1 id="三、stable-diffusion环境配置"><a href="#三、stable-diffusion环境配置" class="headerlink" title="三、stable diffusion环境配置"></a>三、stable diffusion环境配置</h1><h2 id="1-下载stable-diffusion源码"><a href="#1-下载stable-diffusion源码" class="headerlink" title="1.下载stable diffusion源码"></a>1.下载stable diffusion源码</h2><p>确认你的miniconda黑色小窗显示的是(把stable看成是lmd就行)<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891591-c89c0092-c8ad-49fd-8967-3a0b64d8f963.webp#averageHue=%230c0c0c&clientId=ue216eeb4-8a2a-4&from=paste&id=ub78fe9cb&originHeight=1017&originWidth=1903&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u886e69b8-b8fc-49a3-8ee0-a614777876f&title=" srcset="/img/loading.gif" lazyload><br>如果不是，则输入D: 按回车。<br>当然你也可以放在其他你想放的盘的根目录里面。<br>不建议放在c盘，因为这个项目里面有一些模型包，都是几个G几个G的，很容易你的C盘就满了，其他盘容量在10G以上的就都行。<br>再来克隆stable diffusion webui项目（下面简称sd-webui）<br>接着执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/AUTOMATIC1111/stable-diffusion-webui.git<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>注意，现在克隆的本地地址，就是下面经常提到的“项目根目录”。比如，我的项目根目录是D:\stable-diffusion-webui</p>
+<h2 id="2-下载stable-diffusion的训练模型"><a href="#2-下载stable-diffusion的训练模型" class="headerlink" title="2.下载stable diffusion的训练模型"></a>2.下载stable diffusion的训练模型</h2><p>地址：<a target="_blank" rel="noopener" href="https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/tree/main">https://huggingface.co/CompVis/stable-diffusion-v-1-4-original/tree/main</a><br>点击file and versions选项卡，下载sd-v1-4.ckpt训练模型。<br>（需要注册且同意协议，注册并同意协议之后即可下载）<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891960-0faabc36-8973-4506-812d-eb5c58dce5e4.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=ua611e2a4&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ucbbb0d9b-a560-4eb3-904b-961d517e5b3&title=" srcset="/img/loading.gif" lazyload><br>注：这个模型是用于后续生成AI绘图的绘图元素基础模型库。<br>后面如果要用waifuai或者novelai，其实更换模型放进去sd-webui项目的模型文件夹即可。<br>我们现在先用stable diffusion 1.4的模型来继续往下走。</p>
+<h2 id="3-更改训练模型名称"><a href="#3-更改训练模型名称" class="headerlink" title="3.更改训练模型名称"></a>3.更改训练模型名称</h2><p>下载好之后，请把模型更名成model.ckpt,然后放置在sd-webui的models&#x2F;stable-diffusion目录下。比如我的路径是D:\stable-diffusion-webui\models\Stable-diffusion<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909891800-2f69fcb7-baaa-42b2-a1d5-320a365adf72.webp#averageHue=%23fefefe&clientId=ue216eeb4-8a2a-4&from=paste&id=u7643fcc5&originHeight=960&originWidth=1767&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u78626d1f-51de-4c9c-9b40-b4ff913a166&title=" srcset="/img/loading.gif" lazyload></p>
+<h2 id="4-安装GFPGAN"><a href="#4-安装GFPGAN" class="headerlink" title="4. 安装GFPGAN"></a>4. 安装GFPGAN</h2><p>这是腾讯旗下的一个开源项目，可以用于修复和绘制人脸，减少stable diffusion人脸的绘制扭曲变形问题<br>地址：<a target="_blank" rel="noopener" href="https://github.com/TencentARC/GFPGAN">https://github.com/TencentARC/GFPGAN</a><br>把网页往下拉，拉到readme.md部分，找到V1.4 model，点击蓝色的1.4就可以下载。<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909892214-e07bdc69-2af5-40ee-8cee-cef8754fb1a0.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=u4e7ec006&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=ua24d081b-30fb-4cba-b034-829eafdeacf&title=" srcset="/img/loading.gif" lazyload><br>下载好之后，放在sd-webui项目的根目录下面即可，比如我的根目录是D:\stable-diffusion-webui</p>
+<h2 id="4-在miniconda的黑色小窗，准备开启运行ai绘图程序sd-webui"><a href="#4-在miniconda的黑色小窗，准备开启运行ai绘图程序sd-webui" class="headerlink" title="4.在miniconda的黑色小窗，准备开启运行ai绘图程序sd-webui"></a>4.在miniconda的黑色小窗，准备开启运行ai绘图程序sd-webui</h2><p>输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> stable-diffusion-webui<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>进入项目的根目录。<br>切记，一定要进入sd-webui的项目根目录后，才能执行下面的指令，否则会报错。<br>接着执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">webui-user.bat<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>然后回车，等待系统自动开始执行。<br>直到系统提示，running on local URL: <a target="_blank" rel="noopener" href="http://127.0.0.1:7860/">http://127.0.0.1:7860</a><br>这就代表，你可以开始正式使用AI画画啦~<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909892404-30025fe1-0334-4e52-89e2-927c62c1a8d3.webp#averageHue=%23292929&clientId=ue216eeb4-8a2a-4&from=paste&id=u8cf06388&originHeight=478&originWidth=1903&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u7d3a87f3-7ae4-4b65-9cfe-7720b7978e6&title=" srcset="/img/loading.gif" lazyload><br>注意：<br>这一步可能经常各种报错，需要耐心和时间多次尝试。<br>不要关闭黑色小窗，哪怕它几分钟没有任何变化。<br>如果提示连接错误，可能需要开启或者关闭魔法上网，再重新执行webui-user.bat命令。<br>如果不小心退出了黑色窗口，则重新点击：开始菜单-程序-打开miniconda窗口，输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">conda activate lmd<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy<br>并进入sd-webui项目根目录再执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">webui-user.bat<br></code></pre></td></tr></table></figure>
+<p>Bash<br>Copy</p>
+<h1 id="四、开始作画和调试"><a href="#四、开始作画和调试" class="headerlink" title="四、开始作画和调试"></a>四、开始作画和调试</h1><h2 id="1-在浏览器，（比如谷歌浏览器），打开http-127-0-0-1-7860（注意，不要关闭miniconda的黑色窗口）"><a href="#1-在浏览器，（比如谷歌浏览器），打开http-127-0-0-1-7860（注意，不要关闭miniconda的黑色窗口）" class="headerlink" title="1.在浏览器，（比如谷歌浏览器），打开http://127.0.0.1:7860（注意，不要关闭miniconda的黑色窗口）"></a>1.在浏览器，（比如谷歌浏览器），打开<a href="http://127.0.0.1:7860（注意，不要关闭miniconda的黑色窗口）">http://127.0.0.1:7860（注意，不要关闭miniconda的黑色窗口）</a></h2><p><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909892702-007575dd-39e9-4df3-8fa8-82c7c4455fab.webp#averageHue=%23fdfcfc&clientId=ue216eeb4-8a2a-4&from=paste&id=u39a64ffa&originHeight=937&originWidth=1920&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u2fd504af-945e-486a-91c4-419aec37c01&title=" srcset="/img/loading.gif" lazyload></p>
+<h2 id="2-在prompt区域输入相关指令，比如beautiful-landscape，然后点击右边的generate，即可生成第一张图片啦。"><a href="#2-在prompt区域输入相关指令，比如beautiful-landscape，然后点击右边的generate，即可生成第一张图片啦。" class="headerlink" title="2.在prompt区域输入相关指令，比如beautiful landscape，然后点击右边的generate，即可生成第一张图片啦。"></a>2.在prompt区域输入相关指令，比如beautiful landscape，然后点击右边的generate，即可生成第一张图片啦。</h2><p><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909893105-e08788fe-11b6-400c-bf10-921d8c585d79.webp#averageHue=%23fdfdfd&clientId=ue216eeb4-8a2a-4&from=paste&id=ucfc16e4f&originHeight=392&originWidth=1894&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u8b863ff3-04ad-4654-baa6-36430fdda41&title=" srcset="/img/loading.gif" lazyload></p>
+<h2 id="3-生成的状态和操作"><a href="#3-生成的状态和操作" class="headerlink" title="3.生成的状态和操作"></a>3.生成的状态和操作</h2><p>网页会显示进度条，miniconda的黑色小窗也会显示进度条。<br>等进度条跑满，就能看到你生成的图啦。<br>如果不想生成了，可以点击interrupt停止生成，就会返回你目前为止已经生成的图片。（比如你要生成10张，已经生成了3张，点击interrupt，就会返回3张图片）<br>如果点击skip，就会跳过本张图片的生成，比如你想生成10张图，现在生成第3张，点击skip，第三张就不生成了，直接开始生成第四张，最后返回9张图片。<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909893304-23387565-036f-4767-916b-8c932a4758c4.webp#averageHue=%238d8b8b&clientId=ue216eeb4-8a2a-4&from=paste&id=u087204c5&originHeight=216&originWidth=926&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=u108dc799-9bf4-44c9-a6cc-5103d8d06f5&title=" srcset="/img/loading.gif" lazyload></p>
+<h2 id="4-修改batch-count数值，一次性生成多张图片"><a href="#4-修改batch-count数值，一次性生成多张图片" class="headerlink" title="4.修改batch count数值，一次性生成多张图片"></a>4.修改batch count数值，一次性生成多张图片</h2><p>默认是1，一次性生成1张。<br>建议一次性生成4张或者以上，这样获得满意的图片概率会大一些，可以最多一次性生成最多100张。<br><img src="https://cdn.nlark.com/yuque/0/2023/webp/209761/1688909893312-3579df65-64d2-44d6-9c07-f21591e6f5ce.webp#averageHue=%23f7f6f3&clientId=ue216eeb4-8a2a-4&from=paste&id=ud06bd0eb&originHeight=136&originWidth=823&originalType=url&ratio=1&rotation=0&showTitle=false&status=done&style=none&taskId=uc77d3c49-547b-485c-ad4e-6a716ee05b9&title=" srcset="/img/loading.gif" lazyload><br>但写得越大，一次性生成花费的时间越长，假设一张图30秒，设置10张就是300s，5分钟，100张则是3000s，50分钟。</p>
+<h2 id="5-好了，那现在就本地化部署完毕了，可以开始愉快地玩耍啦，祝你玩得开心"><a href="#5-好了，那现在就本地化部署完毕了，可以开始愉快地玩耍啦，祝你玩得开心" class="headerlink" title="5.好了，那现在就本地化部署完毕了，可以开始愉快地玩耍啦，祝你玩得开心~"></a>5.好了，那现在就本地化部署完毕了，可以开始愉快地玩耍啦，祝你玩得开心~</h2><h1 id="五、安装过程中的错误处理"><a href="#五、安装过程中的错误处理" class="headerlink" title="五、安装过程中的错误处理"></a>五、安装过程中的错误处理</h1><h2 id="1、新版SD-WebUI卡安装Open-Clip解决方法"><a href="#1、新版SD-WebUI卡安装Open-Clip解决方法" class="headerlink" title="1、新版SD WebUI卡安装Open_Clip解决方法"></a>1、新版SD WebUI卡安装Open_Clip解决方法</h2><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/read/cv21253533">https://www.bilibili.com/read/cv21253533</a></p>
+<h2 id="2、Stable-Diffusion-V2-Stability-AI处理"><a href="#2、Stable-Diffusion-V2-Stability-AI处理" class="headerlink" title="2、Stable Diffusion V2-Stability-AI处理"></a>2、Stable Diffusion V2-Stability-AI处理</h2><p><a target="_blank" rel="noopener" href="https://gitee.com/jerrylinkun/stable-diffusion-v2-stability-ai?_from=gitee_search">https://gitee.com/jerrylinkun/stable-diffusion-v2-stability-ai?_from=gitee_search</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>stable diffusion在线部署</div>
+      <div>http://example.com/2023/07/23/stable diffusion本地部署/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>添财思维</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/07/23/stable%20diffusion%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%94%A8%E6%B3%95/" title="stable diffusion在线部署">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">stable diffusion在线部署</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/23/stable%20diffusion%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/" title="stable diffusion本地部署">
+                        <span class="hidden-mobile">stable diffusion本地部署</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
