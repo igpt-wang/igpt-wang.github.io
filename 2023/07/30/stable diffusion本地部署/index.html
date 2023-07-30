@@ -44,7 +44,7 @@
 <meta property="og:image" content="http://rylqiwos0.bkt.clouddn.com/202307301821060.webp">
 <meta property="og:image" content="http://rylqiwos0.bkt.clouddn.com/202307301821231.webp">
 <meta property="article:published_time" content="2023-07-30T10:14:47.358Z">
-<meta property="article:modified_time" content="2023-07-30T10:21:33.897Z">
+<meta property="article:modified_time" content="2023-07-30T10:42:06.542Z">
 <meta property="article:author" content="添财思维">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://rylqiwos0.bkt.clouddn.com/202307301815937.webp">
@@ -299,7 +299,7 @@
 <li>显卡的显存需要足够大，至于多大没看到哪有说，反正6g绝对不行</li>
 </ol>
 <h2 id="3-部署前准备："><a href="#3-部署前准备：" class="headerlink" title="3.部署前准备："></a>3.部署前准备：</h2><p>本地化部署运行虽然很好，但是也有一些基本要求<br>（1）需要拥有NVIDIA显卡，GT1060起，显存4G以上。（已经不需要3080起，亲民不少）<br>（2）操作系统需要win10或者win11的系统。<br>MacOS平台本地化请见《如何在mac电脑上运行stable diffusion来做AI绘画》<br>（3）电脑内存16G或者以上。<br>（4）最好会魔法上网，否则网络波动，有些网页打不开，有时下载很慢。<br>（5）耐心，多尝试，多搜索。这个教程我已经重复过2次，因此很多问题基本上都踩坑并写出来了。所以请放心，能跑通的。<br>我的电脑配置供大家参考，Win10，I7，NVIDIA GT1050 4G，16G<br>生成一张20step的图大概20-30s（若使用更高性能的电脑，生成速度更快。）</p>
-<h2 id="4-使用的项目Stable-diffusion-WebUI项目"><a href="#4-使用的项目Stable-diffusion-WebUI项目" class="headerlink" title="4.使用的项目Stable diffusion WebUI项目"></a>4.使用的项目Stable diffusion WebUI项目</h2><p>Stable diffusion大家都知道了，是当前最多人使用且效果最好的开源AI绘图软件之一，属于当红炸子鸡了。<br>不过，stable diffusion项目本地化的部署，是纯代码界面，使用起来对于非程序员没那么友好。<br>而stable diffusion webui，是基于stable diffusion 项目的可视化操作项目。<br>通过可视化的网页操作，更方便调试prompt，及各种参数。<br>同时也附加了很多功能，比如img2img功能，extra放大图片功能等等。<br><img src="http://rylqiwos0.bkt.clouddn.com/202307301815937.webp" srcset="/img/loading.gif" lazyload><br>因此stable diffusion webui项目是很多人部署到本地的首选。<br>我们本教程就是以stable diffusion webui项目为例来操作的。</p>
+<h2 id="4-使用的项目Stable-diffusion-WebUI项目"><a href="#4-使用的项目Stable-diffusion-WebUI项目" class="headerlink" title="4.使用的项目Stable diffusion WebUI项目"></a>4.使用的项目Stable diffusion WebUI项目</h2><p>Stable diffusion大家都知道了，是当前最多人使用且效果最好的开源AI绘图软件之一，属于当红炸子鸡了。<br>不过，stable diffusion项目本地化的部署，是纯代码界面，使用起来对于非程序员没那么友好。<br>而stable diffusion webui，是基于stable diffusion 项目的可视化操作项目。<br>通过可视化的网页操作，更方便调试prompt，及各种参数。<br>同时也附加了很多功能，比如img2img功能，extra放大图片功能等等。<br><img src="//rylqiwos0.bkt.clouddn.com/202307301815937.webp" srcset="/img/loading.gif" lazyload><br>因此stable diffusion webui项目是很多人部署到本地的首选。<br>我们本教程就是以stable diffusion webui项目为例来操作的。</p>
 <h1 id="二、电脑环境配置"><a href="#二、电脑环境配置" class="headerlink" title="二、电脑环境配置"></a>二、电脑环境配置</h1><h2 id="1-安装miniconda"><a href="#1-安装miniconda" class="headerlink" title="1.安装miniconda"></a>1.安装miniconda</h2><p>这个是用来管理python版本的，他可以实现python的多版本切换。<br>下载地址：<a target="_blank" rel="noopener" href="https://docs.conda.io/en/latest/miniconda.html">https://docs.conda.io/en/latest/miniconda.html</a><br><img src="http://rylqiwos0.bkt.clouddn.com/202307301816987.webp" srcset="/img/loading.gif" lazyload><br>安装时按默认的一路next就行。</p>
 <h2 id="2-用管理员权限打开miniconda，输入conda-V-弹出版本号即为正确安装"><a href="#2-用管理员权限打开miniconda，输入conda-V-弹出版本号即为正确安装" class="headerlink" title="2.用管理员权限打开miniconda，输入conda -V 弹出版本号即为正确安装"></a>2.用管理员权限打开miniconda，输入conda -V 弹出版本号即为正确安装</h2><p><img src="http://rylqiwos0.bkt.clouddn.com/202307301816098.webp" srcset="/img/loading.gif" lazyload><br><img src="http://rylqiwos0.bkt.clouddn.com/202307301820770.webp" srcset="/img/loading.gif" lazyload></p>
 <h2 id="3-配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）"><a href="#3-配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）" class="headerlink" title="3.配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）"></a>3.配置库包下载环境，加快网络速度（替换下载库包地址为国内的清华镜像站）</h2><p>执行下面</p>
